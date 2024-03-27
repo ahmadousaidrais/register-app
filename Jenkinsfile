@@ -1,6 +1,6 @@
 pipeline {
     agent {
-        label 'docker'
+        label 'any'
         tools {
             maven 'Maven3'
             jdk 'Java17'
