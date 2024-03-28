@@ -4,6 +4,7 @@ pipeline {
     tools {
         maven 'Maven3'
         jdk 'Java17'
+        sonarqubeScanner 'sonnarqube-scans'
     }
 
     stages {
@@ -25,6 +26,13 @@ pipeline {
         stage('Maven Test') {
             steps {
                 sh 'mvn test'
+            }
+        }
+        stage('SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv(credentialsId: 'sonarqube-token') {
+                    sh 'mvn sonar:sonar'
+                }
             }
         }
     }
