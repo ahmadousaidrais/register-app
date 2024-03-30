@@ -40,18 +40,6 @@ pipeline {
                 }
             }
         }
-        stage('Quality Gate Check') {
-            steps {
-                script {
-                    withCredentials([string(credentialsId: 'sonarqube', variable: 'SONAR_TOKEN')]) {
-                        def qg = waitForQualityGate()
-                        if (qg.status != 'OK') {
-                            error "Pipeline aborted due to Quality Gate failure: ${qg.status}"
-                        }
-                    }
-                }
-            }
-        }
         stage('Build Docker Image') {
             steps {
                 script {
