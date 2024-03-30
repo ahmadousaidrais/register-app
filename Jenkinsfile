@@ -5,7 +5,7 @@ pipeline {
         APP_NAME = "register-app"
         DOCKER_USER = "chrisdylan"
         DOCKER_CREDENTIALS_ID = 'dockerhub'
-        DOCKER_IMAGE_NAME = "${DOCKER_USER}" + "/" + "${APP_NAME}"
+        DOCKER_IMAGE_NAME = "${DOCKER_USER}/${APP_NAME}"
         DOCKER_IMAGE_TAG = "latest-${BUILD_NUMBER}" // Include build number in the tag
     }
 
@@ -45,16 +45,24 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    docker.build(env.DOCKER_IMAGE_NAME + ":" + env.DOCKER_IMAGE_TAG)
+                    docker.build("${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}")
                 }
             }
         }
         stage('Push Docker Image') {
             steps {
                 script {
-                    docker.withRegistry('', env.DOCKER_CREDENTIALS_ID) {
-                        docker.image(env.DOCKER_IMAGE_NAME + ":" + env.DOCKER_IMAGE_TAG).push()
+                    docker.withRegistry('', DOCKER_CREDENTIALS_ID) {
+                        docker.image("${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}").push()
                     }
+                }
+            }
+        }
+        stage('Trivy Scan') {
+            steps {
+                script {
+                    sh "docker pull aquasec/trivy"
+                    sh "docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy --exit-code 1 --severity HIGH,CRITICAL ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}"
                 }
             }
         }
