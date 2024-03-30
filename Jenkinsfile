@@ -2,8 +2,9 @@ pipeline {
     agent any
 
     environment {
+        APP_NAME = "register-app"
         DOCKER_CREDENTIALS_ID = 'dockerhub'
-        DOCKER_IMAGE_NAME = 'registry-app'
+        DOCKER_IMAGE_NAME = "${DOCKER_USER}" + "/" + "${APP_NAME}"
         DOCKER_IMAGE_TAG = "latest-${BUILD_NUMBER}" // Include build number in the tag
     }
 
