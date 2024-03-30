@@ -1,6 +1,12 @@
 pipeline {
     agent any
 
+    environment {
+        DOCKER_CREDENTIALS_ID = 'dockerhub'
+        DOCKER_IMAGE_NAME = 'registry-app'
+        DOCKER_IMAGE_TAG = "latest-${BUILD_NUMBER}" // Include build number in the tag
+    }
+
     tools {
         maven 'Maven3'
         jdk 'Java17'
@@ -42,6 +48,22 @@ pipeline {
                         if (qg.status != 'OK') {
                             error "Pipeline aborted due to Quality Gate failure: ${qg.status}"
                         }
+                    }
+                }
+            }
+        }
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    docker.build(env.DOCKER_IMAGE_NAME + ":" + env.DOCKER_IMAGE_TAG)
+                }
+            }
+        }
+        stage('Push Docker Image') {
+            steps {
+                script {
+                    docker.withRegistry('', env.DOCKER_CREDENTIALS_ID) {
+                        docker.image(env.DOCKER_IMAGE_NAME + ":" + env.DOCKER_IMAGE_TAG).push()
                     }
                 }
             }
