@@ -62,10 +62,7 @@ pipeline {
             steps {
                 script {
                     sh "docker pull aquasec/trivy"
-                    def result = sh(script: "docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy --severity HIGH,CRITICAL ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}", returnStatus: true)
-                    if (result != 0) {
-                        error "Trivy scan found vulnerabilities with severity HIGH or CRITICAL."
-                    }
+                    sh "docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy --severity HIGH,CRITICAL ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}"
                 }
             }
         }
