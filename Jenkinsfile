@@ -3,6 +3,7 @@ pipeline {
 
     environment {
         APP_NAME = "register-app"
+        DOCKER_USER = "chrisdylan"
         DOCKER_CREDENTIALS_ID = 'dockerhub'
         DOCKER_IMAGE_NAME = "${DOCKER_USER}" + "/" + "${APP_NAME}"
         DOCKER_IMAGE_TAG = "latest-${BUILD_NUMBER}" // Include build number in the tag
